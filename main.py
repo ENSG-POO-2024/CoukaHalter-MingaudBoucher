@@ -1,4 +1,5 @@
-from pokemon import pokemon, pokemonSauvage, pokemonCapture
+from pokemon import pokemon, pokemonSauvage, pokemonCapture, capture
+
 
 if __name__ == "__main__":
     pokemon_sauvage = pokemonSauvage(
@@ -13,4 +14,6 @@ if __name__ == "__main__":
         legendaire=False,
         position=(1, 2),
     )
-    pokemon_sauvage.attributs()
+
+    pokemon_capture = capture(pokemon_sauvage)
+    pokemon_capture.attributs()

@@ -55,3 +55,18 @@ class pokemonCapture(pokemon):
 
     def attributs(self):
         return super().attributs()
+
+
+def capture(pokemon_sauvage: pokemonSauvage):
+    pokemon_capture = pokemonCapture(
+        nom=pokemon_sauvage.nom,
+        type1=pokemon_sauvage.type1,
+        hp=pokemon_sauvage.hp,
+        atk=pokemon_sauvage.atk,
+        defense=pokemon_sauvage.defense,
+        atk_spe=pokemon_sauvage.atk_spe,
+        defense_spe=pokemon_sauvage.defense_spe,
+        vitesse=pokemon_sauvage.vitesse,
+        legendaire=pokemon_sauvage.legendaire,
+    )
+    return pokemon_capture
