@@ -1,8 +1,5 @@
 from abc import ABCMeta, abstractmethod, ABC
 from joueur import joueur
-import numpy as np
-import pandas as pd
-import random as rd
 
 
 class pokemon(metaclass=ABCMeta):
