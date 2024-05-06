@@ -56,3 +56,31 @@ class combat():
         Joueur.pokemons_captures[0] = Joueur.pokemons_captures[i]
         Joueur.pokemons_captures[i] = permu
         return Joueur
+'''    
+    def combat(joueur : joueur, pokemon_sauvage : pokemonSauvage):
+        if pokemon_sauvage.hp == 0:
+            joueur.capture(pokemon_sauvage)
+            #backtomap
+            #win(le poke disparait de la map)
+            return 'de retour au bercail'
+        elif len(joueur.pokemons_captures) == 0:
+            return'gros nul'
+            #backtomap
+            #game over gros nul
+        elif combat.fuite(pokemon_sauvage, joueur.pokemons_captures[0]):
+            #backtomap
+            #lose(le poke reste sur la map)
+            return 'lache'
+        else:
+            #if boutton 'attaque neutre' pressé 
+            #    if pokemon_sauvage.vitesse < Joueur.pokemons_captures[0].vitesse:
+            #       pokemon_sauvage.hp() -= attaqueneutre(Joueur.pokemons_captures[0], pokemon_sauvage)
+            #       if pokemon_sauvage.hp() == 0:
+            #           joueur.capture(pokemon_sauvage)
+            #       else:
+            #           Joueur.pokemons_captures[0].hp -= attaqueneutre(pokemon_sauvage, Joueur.pokemons_captures[0])
+            #    else:
+            #       l'inverse t'as capté
+            #   return combat(joueur, pokemon_sauvage)   
+            #on fait pareil pour les 3 autres boutons
+'''
