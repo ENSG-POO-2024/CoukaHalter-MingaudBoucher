@@ -1,4 +1,5 @@
 from pokemon import pokemon, pokemonSauvage, pokemonCapture, capture
+from joueur import joueur
 
 
 if __name__ == "__main__":
@@ -15,5 +16,14 @@ if __name__ == "__main__":
         position=(1, 2),
     )
 
-    pokemon_capture = capture(pokemon_sauvage)
-    pokemon_capture.attributs()
+    # pokemon_capture = capture(pokemon_sauvage)
+    # pokemon_capture.attributs()
+
+    j1 = joueur(
+        position=[1, 2],
+        pokemons_captures=[],
+    )
+
+    j1.affiche_pokemons_captures()
+    j1.capture(pokemon_sauvage)
+    j1.affiche_pokemons_captures()
