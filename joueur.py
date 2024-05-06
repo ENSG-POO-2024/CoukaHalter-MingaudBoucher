@@ -8,6 +8,7 @@ class joueur:
 
     def capture(self, pokemon_sauvage: pokemonSauvage):
         pokemon_capture = pokemonCapture(
+            ID=1+len(joueur.pokemons_captures),
             nom=pokemon_sauvage.nom,
             type1=pokemon_sauvage.type1,
             hp=pokemon_sauvage.hp,
@@ -18,6 +19,7 @@ class joueur:
             vitesse=pokemon_sauvage.vitesse,
             legendaire=pokemon_sauvage.legendaire,
         )
+
         return self.pokemons_captures.append(pokemon_capture)
 
     def affiche_pokemons_captures(self):
