@@ -56,13 +56,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Left:
-            self.moveMap(-10, 0)  # Move map left
+            self.moveMap(10, 0)  # Move map left
         elif event.key() == QtCore.Qt.Key_Right:
-            self.moveMap(10, 0)  # Move map right
+            self.moveMap(-10, 0)  # Move map right
         elif event.key() == QtCore.Qt.Key_Up:
-            self.moveMap(0, -10)  # Move map up
+            self.moveMap(0, 10)  # Move map up
         elif event.key() == QtCore.Qt.Key_Down:
-            self.moveMap(0, 10)  # Move map down
+            self.moveMap(0, -10)  # Move map down
 
     def moveMap(self, dx, dy):
         new_map_x = self.map_label.x() + dx
