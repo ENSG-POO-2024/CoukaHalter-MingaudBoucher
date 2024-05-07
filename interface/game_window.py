@@ -8,7 +8,7 @@ import sys
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.setFixedSize(800, 600)  # Set fixed size for the window
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.map_label = QtWidgets.QLabel(self.centralwidget)
