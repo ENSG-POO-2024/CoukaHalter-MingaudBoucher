@@ -8,11 +8,15 @@ import sys
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.setFixedSize(800, 600)
+        self.window_size_x = 800
+        self.window_size_y = 600
+        MainWindow.setFixedSize(self.window_size_x, self.window_size_y)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.map_label = QtWidgets.QLabel(self.centralwidget)
-        self.map_label.setGeometry(QtCore.QRect(0, 0, 800, 600))
+        self.map_label.setGeometry(
+            QtCore.QRect(0, 0, self.window_size_x, self.window_size_y)
+        )
         self.character_label = QtWidgets.QLabel(self.centralwidget)
         self.character_label.setGeometry(
             QtCore.QRect(390, 290, 20, 20)
@@ -70,15 +74,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if self.window_x < 0:
             self.window_x = 0
+            self.moveCharacter(-10, 0)
+
         elif self.window_x > self.map_width - self.window_width:
             self.window_x = self.map_width - self.window_width
+            self.moveCharacter(10, 0)
 
         if self.window_y < 0:
             self.window_y = 0
+            self.moveCharacter(0, -10)
+
         elif self.window_y > self.map_height - self.window_height:
             self.window_y = self.map_height - self.window_height
+            self.moveCharacter(0, 10)
 
         self.updateMap()
+
+    def moveCharacter(self, dx, dy):
+        current_pos = self.character_label.pos()
+
+        new_pos = QtCore.QPoint(current_pos.x() + dx, current_pos.y() + dy)
+
+        print(self.character_label.pos())
+        if (
+            current_pos.x() + dx <= 0
+            or current_pos.y() + dy <= 0
+            or current_pos.x() + dx >= self.window_size_x
+            or current_pos.y() + dy >= self.window_size_y - 20
+        ):
+            pass
+        else:
+            self.character_label.move(new_pos)
 
     def updateMap(self):
         cropped_pixmap = self.map_pixmap.copy(
