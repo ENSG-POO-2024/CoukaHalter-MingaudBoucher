@@ -41,16 +41,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.map_label.setPixmap(QtGui.QPixmap("./assets/launch.png"))  # Set map image
+        self.map_label.setPixmap(QtGui.QPixmap("./assets/map.jpg"))  # Set map image
         self.map_label.setScaledContents(True)  # Scale the image to fit the label
 
-        self.map_width = 800  # Map width
-        self.map_height = 600  # Map height
+        self.map_width = 600  # Map width
+        self.map_height = 400  # Map height
         self.character_width = 20  # Character width
         self.character_height = 20  # Character height
 
-        self.window_width = 800
-        self.window_height = 600
+        self.window_width = self.map_width
+        self.window_height = self.map_height
 
         self.center_character()
 
@@ -70,25 +70,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         new_character_x = self.character_label.x() - dx
         new_character_y = self.character_label.y() - dy
 
-        if 0 <= new_map_x <= self.map_width - self.window_width:
-            self.map_label.move(new_map_x, self.map_label.y())
-        if 0 <= new_map_y <= self.map_height - self.window_height:
-            self.map_label.move(self.map_label.x(), new_map_y)
-        if 0 <= new_character_x <= self.map_width - self.character_width:
-            self.character_label.move(new_character_x, self.character_label.y())
-        if 0 <= new_character_y <= self.map_height - self.character_height:
-            self.character_label.move(self.character_label.x(), new_character_y)
+        # Adjust map position based on character movement
+        if new_map_x < 0:
+            new_map_x = 0
+        elif new_map_x > self.map_width - self.window_width:
+            new_map_x = self.map_width - self.window_width
+
+        if new_map_y < 0:
+            new_map_y = 0
+        elif new_map_y > self.map_height - self.window_height:
+            new_map_y = self.map_height - self.window_height
+
+        self.map_label.move(new_map_x, new_map_y)
+        self.character_label.move(new_character_x, new_character_y)
 
     def center_character(self):
         self.character_label.move(
             self.window_width // 2 - self.character_label.width() // 2,
             self.window_height // 2 - self.character_label.height() // 2,
         )
-
-    def resizeEvent(self, event):
-        self.window_width = self.width()
-        self.window_height = self.height()
-        self.center_character()
 
 
 if __name__ == "__main__":
