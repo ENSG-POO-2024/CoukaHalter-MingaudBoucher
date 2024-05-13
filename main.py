@@ -1,6 +1,8 @@
 from pokemon import pokemon, pokemonSauvage
 from joueur import joueur
-
+from combat import combat
+import pandas as pd
+import numpy as np
 
 if __name__ == "__main__":
     pokemon_sauvage = pokemonSauvage(
@@ -27,3 +29,15 @@ if __name__ == "__main__":
     j1.affiche_pokemons_captures()
     j1.capture(pokemon_sauvage)
     j1.affiche_pokemons_captures()
+
+
+    stats = pd.read_csv('data/pokemon_first_gen.csv')
+    position = pd.read_csv('data/pokemon_coordinates.csv')
+    recap = pd.merge(position,stats, left_on='pokemon', right_on='Name') #tableau des pokemons sauvages
+    TablePokemon = recap.values #tableau des pokemons sauvages en numpy
+    
+    
+    pokemon1 = recap.head(1)
+    an = combat.attaqueneutre(j1.pokemons_captures[0], pokemon1)
+    at = combat.attaquetype(j1.pokemons_captures[0], pokemon1)
+    combat1 = combat.combat(j1, TablePokemon[0])
