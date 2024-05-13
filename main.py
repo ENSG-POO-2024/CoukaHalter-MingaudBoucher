@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon May 13 09:36:30 2024
+
+@author: Formation
+"""
+
 from pokemon import pokemon, pokemonSauvage
 from joueur import joueur
 from combat import combat

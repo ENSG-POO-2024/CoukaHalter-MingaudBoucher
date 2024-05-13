@@ -1,5 +1,6 @@
 from joueur import joueur
 from pokemon import pokemon, pokemonSauvage, pokemonCapture
+from Button import msgCallBack_An, msgCallBack_At, msgCallBack_changes, msgCallBack_fuite
 import numpy as np
 import pandas as pd
 import random as rd
@@ -53,10 +54,10 @@ class combat():
             else:
                 return "Ce pokemon n'existe pas"
         permu = Joueur.pokemons_captures[0]
-        Joueur.pokemons_captures[0] = Joueur.pokemons_captures[i]
-        Joueur.pokemons_captures[i] = permu
+        Joueur.pokemons_captures[0] = Joueur.pokemons_captures[index]
+        Joueur.pokemons_captures[index] = permu
         return Joueur
-"""
+
     def combat(joueur : joueur, pokemon_sauvage : pokemonSauvage):
         if pokemon_sauvage.hp == 0:
             joueur.capture(pokemon_sauvage)
@@ -64,46 +65,46 @@ class combat():
             #win(le poke disparait de la map)
             return 'de retour au bercail'
         elif len(joueur.pokemons_captures) == 0:
-            return'gros nul'
+            return 'gros nul'
             #backtomap
             #game over gros nul
         elif combat.fuite(pokemon_sauvage, joueur.pokemons_captures[0]):
             #backtomap
             #lose(le poke reste sur la map)
             return 'lache'
-        #else:
-            #if bouton 'attaque neutre' pressé :
-            #    if pokemon_sauvage.vitesse < Joueur.pokemons_captures[0].vitesse:
-            #       pokemon_sauvage.hp() -= attaqueneutre(Joueur.pokemons_captures[0], pokemon_sauvage)
-            #       if pokemon_sauvage.hp() == 0:
-            #           joueur.capture(pokemon_sauvage)
-            #       else:
-            #           Joueur.pokemons_captures[0].hp -= attaqueneutre(pokemon_sauvage, Joueur.pokemons_captures[0])
-            #    else:
-            #       Joueur.pokemons_captures[0].hp() -= attaqueneutre(pokemon_sauvage, Joueur.pokemons_captures[0])
-            #       if Joueur.pokemons_captures[0].hp() == 0:
-            #          return combat(joueur, pokemon_sauvage)
-            #       else:
-            #           pokemon_sauvage.hp() -= attaqueneutre(Joueur.pokemons_captures[0], pokemon_sauvage)
-            #   return combat(joueur, pokemon_sauvage)   
+        else:
+            if msgCallBack_An():
+                if pokemon_sauvage.vitesse < joueur.pokemons_captures[0].vitesse:
+                  pokemon_sauvage.hp -= combat.attaqueneutre(joueur.pokemons_captures[0], pokemon_sauvage)
+                  if pokemon_sauvage.hp == 0:
+                      joueur.capture(pokemon_sauvage)
+                  else:
+                      joueur.pokemons_captures[0].hp -= combat.attaqueneutre(pokemon_sauvage, joueur.pokemons_captures[0])
+                else:
+                  joueur.pokemons_captures[0].hp -= combat.attaqueneutre(pokemon_sauvage, joueur.pokemons_captures[0])
+                  if joueur.pokemons_captures[0].hp == 0:
+                      return combat(joueur, pokemon_sauvage)
+                  else:
+                      pokemon_sauvage.hp -= combat.attaqueneutre(joueur.pokemons_captures[0], pokemon_sauvage)
+            return combat(joueur, pokemon_sauvage)   
             #on fait pareil pour les 3 autres boutons
-            #if bouton 'attaque type' pressé 
-            #    if pokemon_sauvage.vitesse < Joueur.pokemons_captures[0].vitesse:
-            #       pokemon_sauvage.hp() -= attaquetype(Joueur.pokemons_captures[0], pokemon_sauvage)
-            #       if pokemon_sauvage.hp() == 0:
-            #           joueur.capture(pokemon_sauvage)
-            #       else:
-            #           Joueur.pokemons_captures[0].hp -= attaquetype(pokemon_sauvage, Joueur.pokemons_captures[0])
-            #    else:
-            #       Joueur.pokemons_captures[0].hp() -= attaquetype(pokemon_sauvage, Joueur.pokemons_captures[0])
-            #       if Joueur.pokemons_captures[0].hp() == 0:
-            #          return combat(joueur, pokemon_sauvage)
-            #       else:
-            #           pokemon_sauvage.hp() -= attaquetype(Joueur.pokemons_captures[0], pokemon_sauvage)
-            #   return combat(joueur, pokemon_sauvage)  ^
-            #if bouton 'changer de pokemon' pressé
-            #   return combat(ChangerDePokemon(joueur), pokemon_sauvage)
-            #if bouton 'fuite' pressé
-                fuite(pokemon_sauvage, joueur.pokemons_captures[0])
+            if msgCallBack_At():
+                if pokemon_sauvage.vitesse < joueur.pokemons_captures[0].vitesse:
+                  pokemon_sauvage.hp -= combat.attaquetype(joueur.pokemons_captures[0], pokemon_sauvage)
+                  if pokemon_sauvage.hp == 0:
+                      joueur.capture(pokemon_sauvage)
+                  else:
+                      joueur.pokemons_captures[0].hp -= combat.attaquetype(pokemon_sauvage, joueur.pokemons_captures[0])
+                else:
+                  joueur.pokemons_captures[0].hp -= combat.attaquetype(pokemon_sauvage, joueur.pokemons_captures[0])
+                  if joueur.pokemons_captures[0].hp == 0:
+                      return combat(joueur, pokemon_sauvage)
+                  else:
+                      pokemon_sauvage.hp -= combat.attaquetype(joueur.pokemons_captures[0], pokemon_sauvage)
+            return combat(joueur, pokemon_sauvage)
+            if msgCallBack_changes():
+               return combat(combat.ChangerDePokemon(joueur), pokemon_sauvage)
+            if msgCallBack_fuite():
+                combat.fuite(pokemon_sauvage, joueur.pokemons_captures[0])
                 return combat(joueur, pokemon_sauvage)
-"""
+
