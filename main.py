@@ -45,9 +45,13 @@ if __name__ == "__main__":
     recap = recap.rename(columns={"Name": "nom", "Type 1": "type1", "Type 2": "type2", "HP":"hp", "Attack": "atk", "Defense": "defense","Sp. Atk": "atk_spe", "Sp. Def": "defense_spe", "Speed": "vitesse", "Legendary": "legendaire", "coordinates": "position"})
     TablePokemon = recap.values #tableau des pokemons sauvages en numpy
     
+    T1 = pd.read_excel('Tableaudestypes.xlsx')
+    TableDesTypes = T1.drop(T1.columns[0], axis=1)
+    TableDesTypesNumpy = TableDesTypes.values
     
-    # pokemon1 = recap.head(1)
-    # # an = combat.attaqueneutre(j1.pokemons_captures[0], pokemon1)
-    # # at = combat.attaquetype(j1.pokemons_captures[0], pokemon1)
+    
+    pokemon1 = recap.head(1)
+    an = combat.attaqueneutre(j1.pokemons_captures[0], pokemon1)
+    at = combat.attaquetype(j1.pokemons_captures[0], pokemon1)
     # combat1 = combat.combat(j1, TablePokemon[0])
     # print(j1)

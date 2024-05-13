@@ -25,7 +25,15 @@ class combat():
         T1 = pd.read_excel('Tableaudestypes.xlsx')
         TableDesTypes = T1.drop(T1.columns[0], axis=1)
         TableDesTypesNumpy = TableDesTypes.values
-        multiplicateur = TableDesTypesNumpy[pokemonDefensif.type1, pokemonOffensif.type1]    
+        for i in range(len(TableDesTypesNumpy[0])) :
+            if pokemonDefensif.type1 == TableDesTypesNumpy[0][i]:
+                a = i
+                break
+        for j in range(len(TableDesTypesNumpy[:,0])) :
+            if pokemonOffensif.type1 == TableDesTypesNumpy[:,0][j] :
+                b = j
+                break
+        multiplicateur = TableDesTypesNumpy[a,b]    
         if pokemonOffensif.atk > pokemonOffensif.atk_spe:
             degat = np.floor(np.floor(22*pokemonOffensif.atk/pokemonDefensif.defense)*multiplicateur)
         else :
