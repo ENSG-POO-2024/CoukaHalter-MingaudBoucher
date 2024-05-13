@@ -1,7 +1,14 @@
 import sys
+import time
+import numpy as np
 from PyQt5.QtWidgets import QApplication, QDialog
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+def affichage_txt(txt):
+    for c in txt:
+        sys.sstdout.write(c)
+        sys.stdout.flush()
+        time.sleep(0.05)
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
