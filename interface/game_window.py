@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtMultimedia import QSoundEffect
 import sys
 
 
@@ -40,11 +41,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.loadMap()
         self.loadCharacter()
+        self.initSounds()
         self.window_x, self.window_y = 0, 0
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.updateWalk)
         self.current_frame = 0
         self.direction = ""
+        self.is_walking = False
 
     def loadMap(self):
         self.map_pixmap = QtGui.QPixmap(self.MAP_FILE)
@@ -67,7 +70,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             center_x, center_y, character_image.width(), character_image.height()
         )
 
+    def initSounds(self):
+        self.walk_sound = QSoundEffect()
+        self.walk_sound.setSource(
+            QtCore.QUrl.fromLocalFile("./assets/sounds/footsteps.wav")
+        )
+        self.walk_sound.setVolume(0.5)
+
     def keyPressEvent(self, event):
+        if event.isAutoRepeat():
+            return
         if event.key() == QtCore.Qt.Key_Left:
             self.walkLeft()
         elif event.key() == QtCore.Qt.Key_Right:
@@ -76,6 +88,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.walkUp()
         elif event.key() == QtCore.Qt.Key_Down:
             self.walkDown()
+
+    def keyReleaseEvent(self, event):
+        if event.isAutoRepeat():
+            return
+        if event.key() in {
+            QtCore.Qt.Key_Left,
+            QtCore.Qt.Key_Right,
+            QtCore.Qt.Key_Up,
+            QtCore.Qt.Key_Down,
+        }:
+            self.stopWalking()
 
     def moveMap(self, dx, dy):
         self.window_x += dx
@@ -99,10 +122,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.map_label.setPixmap(cropped_pixmap)
 
     def walk(self, direction):
+        self.is_walking = True
+        if (
+            not self.walk_sound.isPlaying()
+        ):  # Only play the sound if it's not already playing
+            self.walk_sound.play()
         self.direction = direction
         self.walk_frames = self.WALK_FRAMES[direction]
         self.current_frame = 0
         self.timer.start(100)
+
+    def stopWalking(self):
+        self.is_walking = False
+        self.timer.stop()
+        self.walk_sound.stop()
 
     def updateWalk(self):
         if self.current_frame < len(self.walk_frames):
@@ -119,7 +152,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.moveMap(-5 * dx, -5 * dy)
             self.current_frame += 1
         else:
-            self.timer.stop()
+            self.current_frame = 0
 
     def walkDown(self):
         self.walk("down")
