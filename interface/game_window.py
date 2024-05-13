@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtMultimedia import QSoundEffect
+from PyQt5.QtMultimedia import QSoundEffect, QMediaPlayer, QMediaContent
 import sys
 
 
@@ -28,7 +28,7 @@ class Ui_MainWindow(object):
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     MAP_FILE = "./assets/map.jpg"
-    MOVE_AMOUNT = 2
+    MOVE_AMOUNT = 4
     WALK_FRAMES = {
         "down": [f"./sprites/front/trainer/tile00{i}.png" for i in range(4)],
         "up": [f"./sprites/back/trainer/tile0{i}.png" for i in range(34, 38)],
@@ -42,6 +42,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.loadMap()
         self.loadCharacter()
         self.initSounds()
+        self.initBackgroundMusic()
         self.window_x, self.window_y = 0, 0
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.updateWalk)
@@ -76,6 +77,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QtCore.QUrl.fromLocalFile("./assets/sounds/footsteps.wav")
         )
         self.walk_sound.setVolume(0.5)
+
+    def initBackgroundMusic(self):
+        self.background_music = QSoundEffect()
+        self.background_music.setSource(
+            QtCore.QUrl.fromLocalFile("./assets/sounds/background.wav")
+        )
+        self.background_music.setVolume(0.5)
+        self.background_music.play()
 
     def keyPressEvent(self, event):
         if event.isAutoRepeat():
@@ -130,7 +139,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.direction = direction
         self.walk_frames = self.WALK_FRAMES[direction]
         self.current_frame = 0
-        self.timer.start(100)
+        self.timer.start(80)
 
     def stopWalking(self):
         self.is_walking = False
