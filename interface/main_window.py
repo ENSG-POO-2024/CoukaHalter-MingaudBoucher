@@ -54,8 +54,11 @@ class Ui_Dialog(object):
         )
 
     def openGameWindow(self):
-        self.window = MainWindow()
-        self.window.show()
+        app = QApplication.instance()
+        if app is None:
+            app = QApplication(sys.argv)
+        window = MainWindow()
+        window.show()
 
 
 class MainLauncherWindow(QDialog):

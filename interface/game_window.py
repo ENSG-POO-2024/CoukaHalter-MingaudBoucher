@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 import sys
@@ -18,21 +16,7 @@ class Ui_MainWindow(object):
             QtCore.QRect(0, 0, self.window_size_x, self.window_size_y)
         )
         self.character_label = QtWidgets.QLabel(self.centralwidget)
-        self.character_label.setGeometry(
-            QtCore.QRect(390, 290, 20, 20)
-        )  # Center of the screen
-        self.character_label.setStyleSheet(
-            "background-color: red; border-radius: 10px"
-        )  # Character appearance
         MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 22))
-        self.menubar.setObjectName("menubar")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -42,98 +26,113 @@ class Ui_MainWindow(object):
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
+    MAP_FILE = "./assets/map.jpg"
+    MOVE_AMOUNT = 2
+    WALK_FRAMES = {
+        "down": [f"./sprites/front/trainer/tile00{i}.png" for i in range(4)],
+        "up": [f"./sprites/back/trainer/tile0{i}.png" for i in range(34, 38)],
+        "left": [f"./sprites/front/trainer/tile0{i}.png" for i in range(68, 71)],
+        "right": [f"./sprites/front/trainer/tile{i}.png" for i in range(102, 105)],
+    }
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.map_pixmap = QtGui.QPixmap("./assets/map.jpg")
+        self.loadMap()
+        self.loadCharacter()
+        self.window_x, self.window_y = 0, 0
+        self.timer = QtCore.QTimer()
+        self.timer.timeout.connect(self.updateWalk)
+        self.current_frame = 0
+        self.direction = ""
+
+    def loadMap(self):
+        self.map_pixmap = QtGui.QPixmap(self.MAP_FILE)
         self.map_label.setPixmap(self.map_pixmap)
         self.map_label.setScaledContents(True)
+        self.map_width, self.map_height = (
+            self.map_pixmap.width(),
+            self.map_pixmap.height(),
+        )
 
-        self.map_width = self.map_pixmap.width()
-        self.map_height = self.map_pixmap.height()
+    def loadCharacter(self):
+        character_image = QtGui.QPixmap("./sprites/front/trainer/tile102.png")
+        self.character_label.setPixmap(character_image)
+        self.character_label.setGeometry(self.centerCharacter(character_image))
 
-        # Initial window size and position
-        self.window_width = 400
-        self.window_height = 300
-        self.window_x = 0
-        self.window_y = 0
+    def centerCharacter(self, character_image):
+        center_x = (self.window_size_x - character_image.width()) // 2
+        center_y = (self.window_size_y - character_image.height()) // 2
+        return QtCore.QRect(
+            center_x, center_y, character_image.width(), character_image.height()
+        )
 
     def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_Left:
-            self.moveMap(-10, 0)
-        elif event.key() == QtCore.Qt.Key_Right:
-            self.moveMap(10, 0)
-        elif event.key() == QtCore.Qt.Key_Up:
-            self.moveMap(0, -10)
-        elif event.key() == QtCore.Qt.Key_Down:
-            self.moveMap(0, 10)
+        actions = {
+            QtCore.Qt.Key_Left: self.walkLeft,
+            QtCore.Qt.Key_Right: self.walkRight,
+            QtCore.Qt.Key_Up: self.walkUp,
+            QtCore.Qt.Key_Down: self.walkDown,
+        }
+        action = actions.get(event.key())
+
+        action()
 
     def moveMap(self, dx, dy):
         self.window_x += dx
         self.window_y += dy
-        current_pos = self.character_label.pos()
-
-        if self.window_x < 0:
-            self.window_x = 0
-            self.moveCharacter(-10, 0)
-
-        elif self.window_x > self.map_width - self.window_width:
-            self.window_x = self.map_width - self.window_width
-            self.moveCharacter(10, 0)
-
-        elif 0 < current_pos.x() and current_pos.x() < self.window_size_x / 2:
-            self.window_x = 0
-            self.moveCharacter(10, 0)
-
-        elif (
-            self.window_size_x / 2 < current_pos.x()
-            and current_pos.x() < self.window_size_x
-        ):
-            self.window_x = self.map_width - self.window_width
-            self.moveCharacter(-10, 0)
-
-        if self.window_y < 0:
-            self.window_y = 0
-            self.moveCharacter(0, -10)
-
-        elif self.window_y > self.map_height - self.window_height:
-            self.window_y = self.map_height - self.window_height
-            self.moveCharacter(0, 10)
-
-        elif 0 < current_pos.y() and current_pos.y() < self.window_size_y / 2:
-            self.window_y = 0
-            self.moveCharacter(0, 10)
-
-        elif (
-            self.window_size_y / 2 < current_pos.y()
-            and current_pos.y() < self.window_size_y
-        ):
-            self.window_y = self.map_height - self.window_height
-            self.moveCharacter(0, -10)
-
+        self.window_x = max(0, min(self.window_x, self.map_width - self.window_size_x))
+        self.window_y = max(0, min(self.window_y, self.map_height - self.window_size_y))
         self.updateMap()
 
     def moveCharacter(self, dx, dy):
         current_pos = self.character_label.pos()
-
         new_pos = QtCore.QPoint(current_pos.x() + dx, current_pos.y() + dy)
-
-        print(self.character_label.pos())
-        if (
-            current_pos.x() + dx <= 0
-            or current_pos.y() + dy <= 0
-            or current_pos.x() + dx >= self.window_size_x
-            or current_pos.y() + dy >= self.window_size_y - 20
+        if (0 <= new_pos.x() <= self.map_width - self.character_label.width()) and (
+            0 <= new_pos.y() <= self.map_height - self.character_label.height()
         ):
-            pass
-        else:
             self.character_label.move(new_pos)
 
     def updateMap(self):
         cropped_pixmap = self.map_pixmap.copy(
-            self.window_x, self.window_y, self.window_width, self.window_height
+            self.window_x, self.window_y, self.window_size_x, self.window_size_y
         )
         self.map_label.setPixmap(cropped_pixmap)
+
+    def walk(self, direction):
+        self.direction = direction
+        self.walk_frames = self.WALK_FRAMES[direction]
+        self.current_frame = 0
+        self.timer.start(100)
+
+    def updateWalk(self):
+        if self.current_frame < len(self.walk_frames):
+            frame_file = self.walk_frames[self.current_frame]
+            frame = QtGui.QPixmap(frame_file)
+            self.character_label.setPixmap(frame)
+            dx, dy = {
+                "down": (0, -self.MOVE_AMOUNT),
+                "up": (0, self.MOVE_AMOUNT),
+                "left": (self.MOVE_AMOUNT, 0),
+                "right": (-self.MOVE_AMOUNT, 0),
+            }[self.direction]
+            self.moveCharacter(-dx, -dy)
+            self.moveMap(-5 * dx, -5 * dy)
+            self.current_frame += 1
+        else:
+            self.timer.stop()
+
+    def walkDown(self):
+        self.walk("down")
+
+    def walkUp(self):
+        self.walk("up")
+
+    def walkLeft(self):
+        self.walk("left")
+
+    def walkRight(self):
+        self.walk("right")
 
 
 if __name__ == "__main__":
