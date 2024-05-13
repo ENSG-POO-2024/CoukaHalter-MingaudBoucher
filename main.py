@@ -40,11 +40,14 @@ if __name__ == "__main__":
 
     stats = pd.read_csv('data/pokemon_first_gen.csv')
     position = pd.read_csv('data/pokemon_coordinates.csv')
-    recap = pd.merge(position,stats, left_on='pokemon', right_on='Name') #tableau des pokemons sauvages
+    recap = pd.merge(position,stats, left_on='pokemon', right_on='Name')#tableau des pokemons sauvages
+    recap = recap.drop(recap.columns[2], axis=1)
+    recap = recap.rename(columns={"Name": "nom", "Type 1": "type1", "Type 2": "type2", "HP":"hp", "Attack": "atk", "Defense": "defense","Sp. Atk": "atk_spe", "Sp. Def": "defense_spe", "Speed": "vitesse", "Legendary": "legendaire", "coordinates": "position"})
     TablePokemon = recap.values #tableau des pokemons sauvages en numpy
     
     
-    pokemon1 = recap.head(1)
-    an = combat.attaqueneutre(j1.pokemons_captures[0], pokemon1)
-    at = combat.attaquetype(j1.pokemons_captures[0], pokemon1)
-    combat1 = combat.combat(j1, TablePokemon[0])
+    # pokemon1 = recap.head(1)
+    # # an = combat.attaqueneutre(j1.pokemons_captures[0], pokemon1)
+    # # at = combat.attaquetype(j1.pokemons_captures[0], pokemon1)
+    # combat1 = combat.combat(j1, TablePokemon[0])
+    # print(j1)

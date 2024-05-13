@@ -59,11 +59,11 @@ class combat():
         return Joueur
 
     def combat(joueur : joueur, pokemon_sauvage : pokemonSauvage):
-        if pokemon_sauvage.hp == 0:
+        if pokemon_sauvage.hp <= 0:
             joueur.capture(pokemon_sauvage)
-            #backtomap
-            #win(le poke disparait de la map)
             return 'de retour au bercail'
+            #backtomap
+            #win(le poke disparait de la map)           
         elif len(joueur.pokemons_captures) == 0:
             return 'gros nul'
             #backtomap
@@ -76,13 +76,13 @@ class combat():
             if msgCallBack_An():
                 if pokemon_sauvage.vitesse < joueur.pokemons_captures[0].vitesse:
                   pokemon_sauvage.hp -= combat.attaqueneutre(joueur.pokemons_captures[0], pokemon_sauvage)
-                  if pokemon_sauvage.hp == 0:
+                  if pokemon_sauvage.hp <= 0:
                       joueur.capture(pokemon_sauvage)
                   else:
                       joueur.pokemons_captures[0].hp -= combat.attaqueneutre(pokemon_sauvage, joueur.pokemons_captures[0])
                 else:
                   joueur.pokemons_captures[0].hp -= combat.attaqueneutre(pokemon_sauvage, joueur.pokemons_captures[0])
-                  if joueur.pokemons_captures[0].hp == 0:
+                  if joueur.pokemons_captures[0].hp <= 0:
                       return combat(joueur, pokemon_sauvage)
                   else:
                       pokemon_sauvage.hp -= combat.attaqueneutre(joueur.pokemons_captures[0], pokemon_sauvage)
@@ -91,13 +91,13 @@ class combat():
             if msgCallBack_At():
                 if pokemon_sauvage.vitesse < joueur.pokemons_captures[0].vitesse:
                   pokemon_sauvage.hp -= combat.attaquetype(joueur.pokemons_captures[0], pokemon_sauvage)
-                  if pokemon_sauvage.hp == 0:
+                  if pokemon_sauvage.hp <= 0:
                       joueur.capture(pokemon_sauvage)
                   else:
                       joueur.pokemons_captures[0].hp -= combat.attaquetype(pokemon_sauvage, joueur.pokemons_captures[0])
                 else:
                   joueur.pokemons_captures[0].hp -= combat.attaquetype(pokemon_sauvage, joueur.pokemons_captures[0])
-                  if joueur.pokemons_captures[0].hp == 0:
+                  if joueur.pokemons_captures[0].hp <= 0:
                       return combat(joueur, pokemon_sauvage)
                   else:
                       pokemon_sauvage.hp -= combat.attaquetype(joueur.pokemons_captures[0], pokemon_sauvage)
@@ -107,4 +107,3 @@ class combat():
             if msgCallBack_fuite():
                 combat.fuite(pokemon_sauvage, joueur.pokemons_captures[0])
                 return combat(joueur, pokemon_sauvage)
-
