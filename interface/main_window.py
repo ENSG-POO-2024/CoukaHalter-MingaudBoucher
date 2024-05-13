@@ -1,14 +1,8 @@
 import sys
-import time
-import numpy as np
-from PyQt5.QtWidgets import QApplication, QDialog
+from PyQt5.QtWidgets import QApplication, QDialog, QDialogButtonBox, QLabel, QTextEdit
 from PyQt5 import QtCore, QtGui, QtWidgets
+from game_window import MainWindow
 
-def affichage_txt(txt):
-    for c in txt:
-        sys.sstdout.write(c)
-        sys.stdout.flush()
-        time.sleep(0.05)
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -40,9 +34,10 @@ class Ui_Dialog(object):
         self.textEdit.raise_()
 
         self.retranslateUi(Dialog)
-        self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Yes).clicked.connect(
+            self.openGameWindow
+        )
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
@@ -58,15 +53,20 @@ class Ui_Dialog(object):
             )
         )
 
+    def openGameWindow(self):
+        self.window = MainWindow()
+        self.window.show()
 
-class MainWindow(QDialog, Ui_Dialog):
+
+class MainLauncherWindow(QDialog):
     def __init__(self):
         super().__init__()
-        self.setupUi(self)
+        self.ui = Ui_Dialog()
+        self.ui.setupUi(self)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = MainWindow()
+    window = MainLauncherWindow()
     window.show()
     sys.exit(app.exec_())
