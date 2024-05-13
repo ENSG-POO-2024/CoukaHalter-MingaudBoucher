@@ -71,6 +71,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def moveMap(self, dx, dy):
         self.window_x += dx
         self.window_y += dy
+        current_pos = self.character_label.pos()
 
         if self.window_x < 0:
             self.window_x = 0
@@ -80,6 +81,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.window_x = self.map_width - self.window_width
             self.moveCharacter(10, 0)
 
+        elif 0 < current_pos.x() and current_pos.x() < self.window_size_x / 2:
+            self.window_x = 0
+            self.moveCharacter(10, 0)
+
+        elif (
+            self.window_size_x / 2 < current_pos.x()
+            and current_pos.x() < self.window_size_x
+        ):
+            self.window_x = self.map_width - self.window_width
+            self.moveCharacter(-10, 0)
+
         if self.window_y < 0:
             self.window_y = 0
             self.moveCharacter(0, -10)
@@ -87,6 +99,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif self.window_y > self.map_height - self.window_height:
             self.window_y = self.map_height - self.window_height
             self.moveCharacter(0, 10)
+
+        elif 0 < current_pos.y() and current_pos.y() < self.window_size_y / 2:
+            self.window_y = 0
+            self.moveCharacter(0, 10)
+
+        elif (
+            self.window_size_y / 2 < current_pos.y()
+            and current_pos.y() < self.window_size_y
+        ):
+            self.window_y = self.map_height - self.window_height
+            self.moveCharacter(0, -10)
 
         self.updateMap()
 
