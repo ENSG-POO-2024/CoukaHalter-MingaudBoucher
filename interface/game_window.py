@@ -68,15 +68,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
 
     def keyPressEvent(self, event):
-        actions = {
-            QtCore.Qt.Key_Left: self.walkLeft,
-            QtCore.Qt.Key_Right: self.walkRight,
-            QtCore.Qt.Key_Up: self.walkUp,
-            QtCore.Qt.Key_Down: self.walkDown,
-        }
-        action = actions.get(event.key())
-
-        action()
+        if event.key() == QtCore.Qt.Key_Left:
+            self.walkLeft()
+        elif event.key() == QtCore.Qt.Key_Right:
+            self.walkRight()
+        elif event.key() == QtCore.Qt.Key_Up:
+            self.walkUp()
+        elif event.key() == QtCore.Qt.Key_Down:
+            self.walkDown()
 
     def moveMap(self, dx, dy):
         self.window_x += dx
