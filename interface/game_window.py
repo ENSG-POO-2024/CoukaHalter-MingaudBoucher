@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtMultimedia import QSoundEffect, QMediaPlayer, QMediaContent
+from PyQt5.QtMultimedia import QSoundEffect
 import sys
 
 
@@ -44,6 +44,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.initSounds()
         self.initBackgroundMusic()
         self.window_x, self.window_y = 0, 0
+        self.character_x, self.character_y = 0, 0  # Initialize character coordinates
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.updateWalk)
         self.current_frame = 0
@@ -63,6 +64,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         character_image = QtGui.QPixmap("./sprites/front/trainer/tile102.png")
         self.character_label.setPixmap(character_image)
         self.character_label.setGeometry(self.centerCharacter(character_image))
+        self.character_x = (self.window_size_x - character_image.width()) // 2
+        self.character_y = (self.window_size_y - character_image.height()) // 2
 
     def centerCharacter(self, character_image):
         center_x = (self.window_size_x - character_image.width()) // 2
@@ -117,12 +120,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.updateMap()
 
     def moveCharacter(self, dx, dy):
-        current_pos = self.character_label.pos()
-        new_pos = QtCore.QPoint(current_pos.x() + dx, current_pos.y() + dy)
-        if (0 <= new_pos.x() <= self.map_width - self.character_label.width()) and (
-            0 <= new_pos.y() <= self.map_height - self.character_label.height()
-        ):
-            self.character_label.move(new_pos)
+        new_x = self.character_x + dx
+        new_y = self.character_y + dy
+
+        # Ensure character stays within map boundaries
+        if new_x < 0:
+            new_x = 0
+        elif new_x > self.window_size_x - self.character_label.width():
+            new_x = self.window_size_x - self.character_label.width()
+
+        if new_y < 0:
+            new_y = 0
+        elif new_y > self.window_size_y - self.character_label.height():
+            new_y = self.window_size_y - self.character_label.height()
+
+        self.character_x = new_x
+        self.character_y = new_y
+        self.character_label.move(self.character_x, self.character_y)
 
     def updateMap(self):
         cropped_pixmap = self.map_pixmap.copy(
@@ -132,14 +146,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def walk(self, direction):
         self.is_walking = True
-        if (
-            not self.walk_sound.isPlaying()
-        ):  # Only play the sound if it's not already playing
+        if not self.walk_sound.isPlaying():
             self.walk_sound.play()
         self.direction = direction
         self.walk_frames = self.WALK_FRAMES[direction]
         self.current_frame = 0
         self.timer.start(80)
+        print(self.character_x, self.character_y)
 
     def stopWalking(self):
         self.is_walking = False
@@ -152,13 +165,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             frame = QtGui.QPixmap(frame_file)
             self.character_label.setPixmap(frame)
             dx, dy = {
-                "down": (0, -self.MOVE_AMOUNT),
-                "up": (0, self.MOVE_AMOUNT),
-                "left": (self.MOVE_AMOUNT, 0),
-                "right": (-self.MOVE_AMOUNT, 0),
+                "down": (0, self.MOVE_AMOUNT),
+                "up": (0, -self.MOVE_AMOUNT),
+                "left": (-self.MOVE_AMOUNT, 0),
+                "right": (self.MOVE_AMOUNT, 0),
             }[self.direction]
-            self.moveCharacter(-dx, -dy)
-            self.moveMap(-5 * dx, -5 * dy)
+            self.moveCharacter(dx, dy)
+            self.moveMap(4 * dx, 4 * dy)
             self.current_frame += 1
         else:
             self.current_frame = 0
