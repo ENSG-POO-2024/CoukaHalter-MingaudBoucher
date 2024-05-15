@@ -240,6 +240,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     idx not in self.point_windows
                 ):  # Check if window has already been opened
                     self.point_windows.append(idx)
+                    point_label.hide()
                     self.openPointWindow()
 
     def openPointWindow(self):

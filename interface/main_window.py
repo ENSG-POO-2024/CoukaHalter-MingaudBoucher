@@ -1,7 +1,7 @@
-import sys
-from PyQt5.QtWidgets import QApplication, QDialog, QDialogButtonBox, QLabel, QTextEdit
+from PyQt5.QtWidgets import QApplication, QDialog, QDialogButtonBox
 from PyQt5 import QtCore, QtGui, QtWidgets
 from game_window import MainWindow
+import sys
 
 
 class Ui_Dialog(object):
