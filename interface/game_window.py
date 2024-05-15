@@ -195,7 +195,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.walk("right")
 
     def generateRandomPoints(self):
-        for _ in range(10):  # Change the number to generate more or fewer points
+        for _ in range(100):  # Change the number to generate more or fewer points
             map_x = random.randint(
                 0, self.map_width - 20
             )  # Keep map coordinates within map bounds
@@ -206,7 +206,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             point_label = QtWidgets.QLabel(self.centralwidget)
             point_label.setGeometry(window_x, window_y, 20, 20)
             point_label.setStyleSheet("background-color: red; border-radius: 10px;")
-            point_label.show()
+            point_label.hide()
             self.points.append((map_x, map_y, point_label))
             print(self.map_width, self.map_height)
 
@@ -225,6 +225,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if distance_to_point < 100:  # Adjust the threshold as needed
                 print(f"Character is near point {idx+1}")
+                point_label.show()  # Hide the point when character is near
 
 
 if __name__ == "__main__":
