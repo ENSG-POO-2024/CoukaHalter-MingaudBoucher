@@ -28,6 +28,16 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "Pokemon Python"))
 
 
+class PointWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setGeometry(100, 100, 600, 600)
+        self.setWindowTitle("Point Window")
+        self.label = QtWidgets.QLabel(self)
+        self.label.setGeometry(50, 50, 200, 200)
+        self.label.setText("You are near a point!")
+
+
 class MainWindow(QMainWindow, Ui_MainWindow):
     MAP_FILE = "./assets/map.jpg"
     MOVE_AMOUNT = 10
@@ -55,6 +65,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.direction = ""
         self.is_walking = False
         self.points = []  # List to store the points
+        self.point_windows = []  # List to store opened point windows
         self.generateRandomPoints()
 
     def loadMap(self):
@@ -195,7 +206,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.walk("right")
 
     def generateRandomPoints(self):
-        for _ in range(100):  # Change the number to generate more or fewer points
+        for _ in range(10):  # Change the number to generate more or fewer points
             map_x = random.randint(
                 0, self.map_width - 20
             )  # Keep map coordinates within map bounds
@@ -206,7 +217,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             point_label = QtWidgets.QLabel(self.centralwidget)
             point_label.setGeometry(window_x, window_y, 20, 20)
             point_label.setStyleSheet("background-color: red; border-radius: 10px;")
-            point_label.hide()
+            point_label.show()
             self.points.append((map_x, map_y, point_label))
             print(self.map_width, self.map_height)
 
@@ -225,7 +236,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if distance_to_point < 100:  # Adjust the threshold as needed
                 print(f"Character is near point {idx+1}")
-                point_label.show()  # Hide the point when character is near
+                if (
+                    idx not in self.point_windows
+                ):  # Check if window has already been opened
+                    self.point_windows.append(idx)
+                    self.openPointWindow()
+
+    def openPointWindow(self):
+        self.point_window = PointWindow()
+        self.stopWalking()
+        self.point_window.show()
 
 
 if __name__ == "__main__":
