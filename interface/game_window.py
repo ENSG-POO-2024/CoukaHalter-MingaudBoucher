@@ -29,13 +29,19 @@ class Ui_MainWindow(object):
 
 
 class PointWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, main_window):
         super().__init__()
+        self.main_window = main_window
         self.setGeometry(100, 100, 600, 600)
         self.setWindowTitle("Point Window")
         self.label = QtWidgets.QLabel(self)
         self.label.setGeometry(50, 50, 200, 200)
         self.label.setText("You are near a point!")
+
+    def closeEvent(self, event):
+        # Call the MainWindow method to resume background music
+        self.main_window.resumeBackgroundMusic()
+        super().closeEvent(event)
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -101,6 +107,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.background_music.setSource(
             QtCore.QUrl.fromLocalFile("./assets/sounds/background.wav")
         )
+        self.background_music.setLoopCount(QSoundEffect.Infinite)
         self.background_music.setVolume(0.5)
         self.background_music.play()
 
@@ -207,11 +214,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def generateRandomPoints(self):
         for _ in range(10):  # Change the number to generate more or fewer points
-            map_x = random.randint(
-                0, self.map_width - 20
-            )  # Keep map coordinates within map bounds
+            map_x = random.randint(0, self.map_width - 20)  # Keep map coordinates
             map_y = random.randint(0, self.map_height - 20)
-            # Convert map coordinates to window coordinates
+
             window_x = map_x - self.window_x
             window_y = map_y - self.window_y
             point_label = QtWidgets.QLabel(self.centralwidget)
@@ -234,19 +239,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 character_center_x, character_center_y, map_x, map_y
             )
 
-            if distance_to_point < 100:  # Adjust the threshold as needed
+            if distance_to_point < 100:
                 print(f"Character is near point {idx+1}")
-                if (
-                    idx not in self.point_windows
-                ):  # Check if window has already been opened
+                if idx not in self.point_windows:
                     self.point_windows.append(idx)
                     point_label.hide()
                     self.openPointWindow()
 
     def openPointWindow(self):
-        self.point_window = PointWindow()
+        self.background_music.stop()
+
+        self.combat_music = QSoundEffect()
+        self.combat_music.setSource(
+            QtCore.QUrl.fromLocalFile("./assets/sounds/combat_music.wav")
+        )
+        self.combat_music.setVolume(0.5)
+        self.combat_music.play()
+
+        self.point_window = PointWindow(self)
         self.stopWalking()
         self.point_window.show()
+
+    def resumeBackgroundMusic(self):
+        self.combat_music.stop()
+        self.background_music.play()
 
 
 if __name__ == "__main__":
