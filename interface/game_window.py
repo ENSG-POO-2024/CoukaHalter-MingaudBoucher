@@ -33,7 +33,7 @@ class PointWindow(QMainWindow):
         super().__init__()
         self.main_window = main_window
         self.setGeometry(100, 100, 600, 600)
-        self.setWindowTitle("Point Window")
+        self.setWindowTitle("Combat")
         self.label = QtWidgets.QLabel(self)
         self.label.setGeometry(50, 50, 200, 200)
         self.label.setText("You are near a point!")
