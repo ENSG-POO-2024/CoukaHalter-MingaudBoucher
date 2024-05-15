@@ -2,6 +2,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtMultimedia import QSoundEffect
 import sys
+import random
+import math
 
 
 class Ui_MainWindow(object):
@@ -28,7 +30,7 @@ class Ui_MainWindow(object):
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     MAP_FILE = "./assets/map.jpg"
-    MOVE_AMOUNT = 4
+    MOVE_AMOUNT = 10
     WALK_FRAMES = {
         "down": [f"./sprites/front/trainer/tile00{i}.png" for i in range(4)],
         "up": [f"./sprites/back/trainer/tile0{i}.png" for i in range(34, 38)],
@@ -44,12 +46,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.initSounds()
         self.initBackgroundMusic()
         self.window_x, self.window_y = 0, 0
-        self.character_x, self.character_y = 0, 0  # Initialize character coordinates
+        self.character_x, self.character_y = (
+            self.window_size_x - self.character_label.width()
+        ) // 2, (self.window_size_y - self.character_label.height()) // 2
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.updateWalk)
         self.current_frame = 0
         self.direction = ""
         self.is_walking = False
+        self.points = []  # List to store the points
+        self.generateRandomPoints()
 
     def loadMap(self):
         self.map_pixmap = QtGui.QPixmap(self.MAP_FILE)
@@ -64,8 +70,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         character_image = QtGui.QPixmap("./sprites/front/trainer/tile102.png")
         self.character_label.setPixmap(character_image)
         self.character_label.setGeometry(self.centerCharacter(character_image))
-        self.character_x = (self.window_size_x - character_image.width()) // 2
-        self.character_y = (self.window_size_y - character_image.height()) // 2
 
     def centerCharacter(self, character_image):
         center_x = (self.window_size_x - character_image.width()) // 2
@@ -118,25 +122,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.window_x = max(0, min(self.window_x, self.map_width - self.window_size_x))
         self.window_y = max(0, min(self.window_y, self.map_height - self.window_size_y))
         self.updateMap()
+        self.updatePoints()
 
     def moveCharacter(self, dx, dy):
         new_x = self.character_x + dx
         new_y = self.character_y + dy
 
-        # Ensure character stays within map boundaries
         if new_x < 0:
             new_x = 0
-        elif new_x > self.window_size_x - self.character_label.width():
-            new_x = self.window_size_x - self.character_label.width()
+        elif new_x > self.map_width - self.character_label.width():
+            new_x = self.map_width - self.character_label.width()
 
         if new_y < 0:
             new_y = 0
-        elif new_y > self.window_size_y - self.character_label.height():
-            new_y = self.window_size_y - self.character_label.height()
+        elif new_y > self.map_height - self.character_label.height():
+            new_y = self.map_height - self.character_label.height()
 
         self.character_x = new_x
         self.character_y = new_y
-        self.character_label.move(self.character_x, self.character_y)
+        self.character_label.move(
+            self.character_x - self.window_x, self.character_y - self.window_y
+        )
 
     def updateMap(self):
         cropped_pixmap = self.map_pixmap.copy(
@@ -171,7 +177,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 "right": (self.MOVE_AMOUNT, 0),
             }[self.direction]
             self.moveCharacter(dx, dy)
-            self.moveMap(4 * dx, 4 * dy)
+            self.moveMap(dx, dy)
             self.current_frame += 1
         else:
             self.current_frame = 0
@@ -187,6 +193,38 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def walkRight(self):
         self.walk("right")
+
+    def generateRandomPoints(self):
+        for _ in range(10):  # Change the number to generate more or fewer points
+            map_x = random.randint(
+                0, self.map_width - 20
+            )  # Keep map coordinates within map bounds
+            map_y = random.randint(0, self.map_height - 20)
+            # Convert map coordinates to window coordinates
+            window_x = map_x - self.window_x
+            window_y = map_y - self.window_y
+            point_label = QtWidgets.QLabel(self.centralwidget)
+            point_label.setGeometry(window_x, window_y, 20, 20)
+            point_label.setStyleSheet("background-color: red; border-radius: 10px;")
+            point_label.show()
+            self.points.append((map_x, map_y, point_label))
+            print(self.map_width, self.map_height)
+
+    def distance(self, x1, y1, x2, y2):
+        return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+
+    def updatePoints(self):
+        character_center_x = self.character_x + self.character_label.width() / 2
+        character_center_y = self.character_y + self.character_label.height() / 2
+
+        for idx, (map_x, map_y, point_label) in enumerate(self.points):
+            point_label.move(map_x - self.window_x, map_y - self.window_y)
+            distance_to_point = self.distance(
+                character_center_x, character_center_y, map_x, map_y
+            )
+
+            if distance_to_point < 100:  # Adjust the threshold as needed
+                print(f"Character is near point {idx+1}")
 
 
 if __name__ == "__main__":
