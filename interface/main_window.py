@@ -1,11 +1,16 @@
 from PyQt5.QtWidgets import QApplication, QDialog, QDialogButtonBox
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtMultimedia import QSoundEffect, QMediaPlayer, QMediaContent
+from PyQt5.QtMultimediaWidgets import QVideoWidget
 from game_window import MainWindow
+
 import sys
 
 
 class Ui_Dialog(object):
-    def setupUi(self, Dialog):
+    def setupUi(self, Dialog: QDialog, main_window) -> None:
+        self.main_window = main_window  # Keep a reference to the main window
+
         Dialog.setObjectName("Dialog")
         Dialog.resize(501, 390)
         icon = QtGui.QIcon()
@@ -13,6 +18,11 @@ class Ui_Dialog(object):
             QtGui.QPixmap("../assets/pokeball.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off
         )
         Dialog.setWindowIcon(icon)
+
+        self.video_widget = QVideoWidget(Dialog)
+        self.video_widget.setGeometry(QtCore.QRect(-20, -20, 571, 411))
+        self.video_widget.setObjectName("video_widget")
+
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setGeometry(QtCore.QRect(0, 270, 341, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
@@ -20,18 +30,10 @@ class Ui_Dialog(object):
             QtWidgets.QDialogButtonBox.Close | QtWidgets.QDialogButtonBox.Yes
         )
         self.buttonBox.setObjectName("buttonBox")
-        self.label = QtWidgets.QLabel(Dialog)
-        self.label.setGeometry(QtCore.QRect(-20, -20, 571, 411))
-        self.label.setMidLineWidth(-2)
-        self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("../assets/launch.png"))
-        self.label.setObjectName("label")
+
         self.textEdit = QtWidgets.QTextEdit(Dialog)
         self.textEdit.setGeometry(QtCore.QRect(150, 80, 201, 41))
         self.textEdit.setObjectName("textEdit")
-        self.label.raise_()
-        self.buttonBox.raise_()
-        self.textEdit.raise_()
 
         self.retranslateUi(Dialog)
         self.buttonBox.rejected.connect(Dialog.reject)
@@ -39,7 +41,7 @@ class Ui_Dialog(object):
             self.openGameWindow
         )
 
-    def retranslateUi(self, Dialog):
+    def retranslateUi(self, Dialog: QDialog) -> None:
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Pokemon Python Launcher"))
         self.textEdit.setHtml(
@@ -53,19 +55,47 @@ class Ui_Dialog(object):
             )
         )
 
-    def openGameWindow(self):
-        app = QApplication.instance()
-        if app is None:
-            app = QApplication(sys.argv)
-        window = MainWindow()
-        window.show()
+    def openGameWindow(self) -> None:
+        self.main_window.stopBackgroundMusic()  # Stop the background music
+        self.game_window = MainWindow()
+        self.game_window.show()
 
 
 class MainLauncherWindow(QDialog):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.ui = Ui_Dialog()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self, self)  # Pass the reference of MainLauncherWindow
+        self.initVideoBackground()
+        self.initBackgroundMusic()
+
+    def initVideoBackground(self) -> None:
+        self.media_player = QMediaPlayer(self)
+        video_path = QtCore.QUrl.fromLocalFile(
+            "./assets/background_video.mp4"
+        )  # Use an absolute path
+        media_content = QMediaContent(video_path)
+        self.media_player.setMedia(media_content)
+        self.media_player.setVideoOutput(self.ui.video_widget)
+        self.media_player.setVolume(0)  # Mute the video sound if needed
+        self.media_player.play()
+
+        # Error handling
+        self.media_player.error.connect(self.handleMediaError)
+
+    def handleMediaError(self, error: QMediaPlayer.Error) -> None:
+        print(f"Media error occurred: {self.media_player.errorString()}")
+
+    def initBackgroundMusic(self) -> None:
+        self.background_music = QSoundEffect()
+        self.background_music.setSource(
+            QtCore.QUrl.fromLocalFile("./assets/sounds/launcher.wav")
+        )
+        self.background_music.setVolume(0.5)
+        self.background_music.play()
+
+    def stopBackgroundMusic(self) -> None:
+        self.background_music.stop()  # Method to stop the background music
 
 
 if __name__ == "__main__":
