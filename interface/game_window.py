@@ -4,6 +4,7 @@ from PyQt5.QtMultimedia import QSoundEffect
 import sys
 import random
 import math
+import os
 
 
 class Ui_MainWindow(object):
@@ -29,7 +30,7 @@ class Ui_MainWindow(object):
 
 
 class PointWindow(QMainWindow):
-    def __init__(self, main_window: "MainWindow") -> None:
+    def __init__(self, main_window: "MainWindow", image_file: str) -> None:
         super().__init__()
         self.main_window = main_window
         self.setGeometry(100, 100, 600, 600)
@@ -37,6 +38,15 @@ class PointWindow(QMainWindow):
         self.label = QtWidgets.QLabel(self)
         self.label.setGeometry(50, 50, 200, 200)
         self.label.setText("You are near a point!")
+        self.image_label = QtWidgets.QLabel(self)
+        self.image_label.setGeometry(50, 300, 150, 150)
+        self.setImage(image_file)
+
+    def setImage(self, image_file: str) -> None:
+        image_path = f"./sprites/back/{image_file}"
+        pixmap = QtGui.QPixmap(image_path)
+        self.image_label.setPixmap(pixmap)
+        self.image_label.setScaledContents(True)
 
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         self.main_window.resumeBackgroundMusic()
@@ -72,6 +82,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.points = []
         self.point_windows = []
         self.generateRandomPoints()
+        self.pokemonFought = ""
 
     def loadMap(self) -> None:
         self.map_pixmap = QtGui.QPixmap(self.MAP_FILE)
@@ -203,16 +214,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.walk("right")
 
     def generateRandomPoints(self) -> None:
+        images_folder = "./sprites/front/"
+        image_files = [
+            f
+            for f in os.listdir(images_folder)
+            if os.path.isfile(os.path.join(images_folder, f))
+        ]
         for _ in range(10):
+            if not image_files:
+                break
+            image_file = random.choice(image_files)
+            image_files.remove(image_file)
             map_x = random.randint(0, self.map_width - 20)
             map_y = random.randint(0, self.map_height - 20)
             window_x = map_x - self.window_x
             window_y = map_y - self.window_y
             point_label = QtWidgets.QLabel(self.centralwidget)
-            point_label.setGeometry(window_x, window_y, 20, 20)
-            point_label.setStyleSheet("background-color: red; border-radius: 10px;")
+            point_pixmap = QtGui.QPixmap(os.path.join(images_folder, image_file))
+            point_label.setPixmap(point_pixmap)
+            point_label.setGeometry(window_x, window_y, 70, 70)
+            point_label.setScaledContents(True)
             point_label.show()
-            self.points.append((map_x, map_y, point_label))
+            self.points.append((map_x, map_y, point_label, image_file))
             print(self.map_width, self.map_height)
 
     def distance(self, x1: float, y1: float, x2: float, y2: float) -> float:
@@ -222,20 +245,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         character_center_x = self.character_x + self.character_label.width() / 2
         character_center_y = self.character_y + self.character_label.height() / 2
 
-        for idx, (map_x, map_y, point_label) in enumerate(self.points):
+        for idx, (map_x, map_y, point_label, image_file) in enumerate(self.points):
             point_label.move(map_x - self.window_x, map_y - self.window_y)
             distance_to_point = self.distance(
                 character_center_x, character_center_y, map_x, map_y
             )
 
             if distance_to_point < 100:
-                print(f"Character is near point {idx + 1}")
+                print(f"Character is near point {idx + 1} ({image_file})")
                 if idx not in self.point_windows:
                     self.point_windows.append(idx)
                     point_label.hide()
-                    self.openPointWindow()
+                    self.pokemonFought = image_file
+                    self.openPointWindow(image_file)
 
-    def openPointWindow(self) -> None:
+    def openPointWindow(self, image_file: str) -> None:
         self.background_music.stop()
         self.combat_music = QSoundEffect()
         self.combat_music.setSource(
@@ -243,9 +267,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         self.combat_music.setVolume(0.5)
         self.combat_music.play()
-        self.point_window = PointWindow(self)
+        self.point_window = PointWindow(self, image_file)
         self.stopWalking()
         self.point_window.show()
+        print(f"You encountered a Pokémon: {self.pokemonFought}")
 
     def resumeBackgroundMusic(self) -> None:
         self.combat_music.stop()
