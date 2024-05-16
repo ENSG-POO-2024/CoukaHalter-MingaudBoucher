@@ -30,15 +30,9 @@ class combat:
         T1 = pd.read_excel("Tableaudestypes.xlsx")
         TableDesTypes = T1.drop(T1.columns[0], axis=1)
         TableDesTypesNumpy = TableDesTypes.values
-        for i in range(len(TableDesTypesNumpy[0])):
-            if pokemonDefensif.type1 == TableDesTypesNumpy[0][i]:
-                a = i
-                break
-        for j in range(len(TableDesTypesNumpy[:, 0])):
-            if pokemonOffensif.type1 == TableDesTypesNumpy[:, 0][j]:
-                b = j
-                break
-        multiplicateur = TableDesTypesNumpy[a, b]
+        a = np.where(TableDesTypesNumpy==str(pokemonDefensif.type1))[0][1] #on regarde l'indice associé au type du pokémon
+        b = np.where(TableDesTypesNumpy==str(pokemonOffensif.type1))[0][1]
+        multiplicateur = TableDesTypesNumpy[a][b]
         if pokemonOffensif.atk > pokemonOffensif.atk_spe:
             degat = np.floor(
                 np.floor(22 * pokemonOffensif.atk / pokemonDefensif.defense)
@@ -140,7 +134,7 @@ class combat:
                         pokemon_sauvage.hp -= combat.attaquetype(
                             joueur.pokemons_captures[0], pokemon_sauvage
                         )
-            return combat(joueur, pokemon_sauvage)
+                return combat(joueur, pokemon_sauvage)
             if msgCallBack_changes():
                 return combat(combat.ChangerDePokemon(joueur), pokemon_sauvage)
             if msgCallBack_fuite():

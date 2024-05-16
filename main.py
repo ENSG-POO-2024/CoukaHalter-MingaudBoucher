@@ -51,7 +51,11 @@ if __name__ == "__main__":
     
     
     pokemon1 = recap.head(1)
-    an = combat.attaqueneutre(j1.pokemons_captures[0], pokemon1)
-    at = combat.attaquetype(j1.pokemons_captures[0], pokemon1)
-    # combat1 = combat.combat(j1, TablePokemon[0])
-    # print(j1)
+    pokemon2 = recap.tail(1)
+    an1 = combat.attaqueneutre(j1.pokemons_captures[0], pokemon1)
+    an2 = combat.attaqueneutre(j1.pokemons_captures[0], pokemon2)
+    #at1 = combat.attaquetype(j1.pokemons_captures[0], pokemon1)
+    #at2 = combat.attaquetype(pokemon1, j1.pokemons_captures[0])
+    #combat1 = combat.combat(j1, pokemon1)
+    #combat2 = combat.combat(j1, pokemon2)
+    print(j1)
