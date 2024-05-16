@@ -251,6 +251,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.combat_music.stop()
         self.background_music.play()
 
+    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+        self.background_music.stop()
+        if hasattr(self, "combat_music") and self.combat_music.isPlaying():
+            self.combat_music.stop()
+        super().closeEvent(event)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
