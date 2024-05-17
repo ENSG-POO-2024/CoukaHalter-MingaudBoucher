@@ -54,7 +54,7 @@ class PointWindow(QMainWindow):
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    MAP_FILE = "./assets/map.jpg"
+    MAP_FILE = "./sprites/interfaces/map.png"
     MOVE_AMOUNT = 10
     WALK_FRAMES = {
         "down": [f"./sprites/front/trainer/tile00{i}.png" for i in range(4)],
@@ -155,10 +155,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def moveCharacter(self, dx: int, dy: int) -> None:
         new_x = self.character_x + dx
         new_y = self.character_y + dy
-        new_x = max(0, min(new_x, self.map_width - self.character_label.width()))
-        new_y = max(0, min(new_y, self.map_height - self.character_label.height()))
+
+        # Ensure new_x and new_y stay within the defined rectangle bounds
+        new_x = max(82, min(new_x, 880 - self.character_label.width()))
+        new_y = max(62, min(new_y, 1440 - self.character_label.height()))
+
         self.character_x = new_x
         self.character_y = new_y
+
         self.character_label.move(
             self.character_x - self.window_x, self.character_y - self.window_y
         )
@@ -225,8 +229,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 break
             image_file = random.choice(image_files)
             image_files.remove(image_file)
-            map_x = random.randint(0, self.map_width - 20)
-            map_y = random.randint(0, self.map_height - 20)
+            map_x = random.randint(82, 880 - 20)
+            map_y = random.randint(62, 1420 - 20)
             window_x = map_x - self.window_x
             window_y = map_y - self.window_y
             point_label = QtWidgets.QLabel(self.centralwidget)
