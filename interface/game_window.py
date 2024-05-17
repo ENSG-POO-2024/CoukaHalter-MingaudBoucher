@@ -41,23 +41,41 @@ class PointWindow(QMainWindow):
     ) -> None:
         super().__init__()
         self.main_window = main_window
-        self.setGeometry(100, 100, 600, 600)
+        self.setGeometry(100, 100, 465, 640)
         self.setWindowTitle("Combat")
-        self.label = QtWidgets.QLabel(self)
-        self.label.setGeometry(50, 50, 200, 200)
-        self.label.setText("You are near a pokemon!")
-        self.image_label = QtWidgets.QLabel(self)
-        self.image_label.setGeometry(50, 300, 150, 150)
-        self.setImage(img_pokemon_sauvage)
-        self.image_label = QtWidgets.QLabel(self)
-        self.image_label.setGeometry(100, 100, 150, 150)
-        self.setImage(img_pokemon_capture)
 
-    def setImage(self, image_file: str) -> None:
+        # Set up background label
+        self.background_label = QtWidgets.QLabel(self)
+        self.background_label.setGeometry(0, 0, 465, 640)
+        self.setBackgroundImage(
+            "combat.png"
+        )  # Change this to your background image path
+
+        self.image_label_sauvage = QtWidgets.QLabel(self)
+        self.image_label_sauvage.setGeometry(300, 70, 100, 100)
+        self.setFrontImage(self.image_label_sauvage, img_pokemon_sauvage)
+
+        self.image_label_capture = QtWidgets.QLabel(self)
+        self.image_label_capture.setGeometry(50, 140, 150, 150)
+        self.setBackImage(self.image_label_capture, img_pokemon_capture)
+
+    def setFrontImage(self, label: QtWidgets.QLabel, image_file: str) -> None:
+        image_path = f"./sprites/front/{image_file}"
+        pixmap = QtGui.QPixmap(image_path)
+        label.setPixmap(pixmap)
+        label.setScaledContents(True)
+
+    def setBackImage(self, label: QtWidgets.QLabel, image_file: str) -> None:
         image_path = f"./sprites/back/{image_file}"
         pixmap = QtGui.QPixmap(image_path)
-        self.image_label.setPixmap(pixmap)
-        self.image_label.setScaledContents(True)
+        label.setPixmap(pixmap)
+        label.setScaledContents(True)
+
+    def setBackgroundImage(self, image_file: str) -> None:
+        image_path = f"./sprites/interfaces/{image_file}"
+        pixmap = QtGui.QPixmap(image_path)
+        self.background_label.setPixmap(pixmap)
+        self.background_label.setScaledContents(True)
 
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         self.main_window.resumeBackgroundMusic()
