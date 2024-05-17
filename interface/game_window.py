@@ -1,4 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+
+
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtMultimedia import QSoundEffect
 from pokemon import pokemonCapture, pokemonSauvage
@@ -56,7 +58,7 @@ class PointWindow(QMainWindow):
         self.setFrontImage(self.image_label_sauvage, img_pokemon_sauvage)
 
         self.image_label_capture = QtWidgets.QLabel(self)
-        self.image_label_capture.setGeometry(50, 140, 150, 150)
+        self.image_label_capture.setGeometry(60, 165, 100, 100)
         self.setBackImage(self.image_label_capture, img_pokemon_capture)
 
     def setFrontImage(self, label: QtWidgets.QLabel, image_file: str) -> None:
@@ -115,7 +117,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pokemonFought = ""
         self.joueur = joueur()
         self.joueur.capture(self.pokemon_sauvages[0])
-        print(self.joueur.pokemons_captures[0].chemin_sprite)
 
     def load_pokemon_data(self, file_path):
         pokemon_data = []
@@ -235,7 +236,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.walk_frames = self.WALK_FRAMES[direction]
         self.current_frame = 0
         self.timer.start(80)
-        print(self.character_x, self.character_y)
 
     def stopWalking(self) -> None:
         self.is_walking = False
@@ -337,6 +337,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     pokemon_label.hide()
                     self.pokemonFought = img_pokemon_sauvage
                     self.openPointWindow(img_pokemon_sauvage)
+                    self.joueur.capture(sauvage)
+                    self.joueur.affiche_pokemons_captures()
 
     def openPointWindow(self, img_pokemon_sauvage: str) -> None:
         self.background_music.stop()
