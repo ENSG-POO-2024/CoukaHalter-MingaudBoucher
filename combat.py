@@ -33,6 +33,10 @@ class combat:
         a = np.where(TableDesTypesNumpy==str(pokemonDefensif.type1))[0][1] #on regarde l'indice associé au type du pokémon
         b = np.where(TableDesTypesNumpy==str(pokemonOffensif.type1))[0][1]
         multiplicateur = TableDesTypesNumpy[a][b]
+        if (pokemonDefensif.type2 != 'nan') & (pokemonOffensif.type2 != 'nan'):
+            i = np.where(TableDesTypesNumpy==str(pokemonDefensif.type2))[0][1] #on regarde l'indice associé au type du pokémon
+            j = np.where(TableDesTypesNumpy==str(pokemonOffensif.type2))[0][1]
+            multiplicateur = multiplicateur*TableDesTypesNumpy[i][j]
         if pokemonOffensif.atk > pokemonOffensif.atk_spe:
             degat = np.floor(
                 np.floor(22 * pokemonOffensif.atk / pokemonDefensif.defense)

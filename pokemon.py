@@ -6,6 +6,7 @@ class pokemon(metaclass=ABCMeta):
         self,
         nom,
         type1,
+        type2,
         hp,
         atk,
         defense,
@@ -37,6 +38,7 @@ class pokemonSauvage(pokemon):
         self,
         nom,
         type1,
+        type2,
         hp,
         atk,
         defense,
@@ -48,7 +50,7 @@ class pokemonSauvage(pokemon):
     ) -> None:
 
         super().__init__(
-            nom, type1, hp, atk, defense, atk_spe, defense_spe, vitesse, legendaire
+            nom, type1, type2, hp, atk, defense, atk_spe, defense_spe, vitesse, legendaire
         )
         self.position = position
 
@@ -65,6 +67,7 @@ class pokemonCapture(pokemon):
         ID,
         nom,
         type1,
+        type2,
         hp,
         atk,
         defense,
@@ -74,7 +77,7 @@ class pokemonCapture(pokemon):
         legendaire,
     ) -> None:
         super().__init__(
-            nom, type1, hp, atk, defense, atk_spe, defense_spe, vitesse, legendaire
+            nom, type1, type2, hp, atk, defense, atk_spe, defense_spe, vitesse, legendaire
         )
         self.ID = ID
 

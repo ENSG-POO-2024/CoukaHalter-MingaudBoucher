@@ -15,6 +15,7 @@ if __name__ == "__main__":
     pokemon_sauvage = pokemonSauvage(
         nom="Bulbasaur",
         type1="Grass",
+        type2="Poison",
         hp=45,
         atk=49,
         defense=49,
@@ -23,6 +24,20 @@ if __name__ == "__main__":
         vitesse=45,
         legendaire=False,
         position=(1, 2),
+    )
+    
+    pokemon_sauvage2 = pokemonSauvage(
+        nom="Charmander",
+        type1="Fire",
+        type2= "nan",
+        hp=39,
+        atk=52,
+        defense=43,
+        atk_spe=60,
+        defense_spe=50,
+        vitesse=65,
+        legendaire=False,
+        position=(3.3, 0.3),
     )
 
     # pokemon_capture = capture(pokemon_sauvage)
@@ -35,6 +50,7 @@ if __name__ == "__main__":
 
     j1.affiche_pokemons_captures()
     j1.capture(pokemon_sauvage)
+    j1.capture(pokemon_sauvage2)
     j1.affiche_pokemons_captures()
 
 
@@ -56,6 +72,6 @@ if __name__ == "__main__":
     an2 = combat.attaqueneutre(j1.pokemons_captures[0], pokemon2)
     #at1 = combat.attaquetype(j1.pokemons_captures[0], pokemon1)
     #at2 = combat.attaquetype(pokemon1, j1.pokemons_captures[0])
-    #combat1 = combat.combat(j1, pokemon1)
+    combat1 = combat.combat(j1, pokemon1)
     #combat2 = combat.combat(j1, pokemon2)
     print(j1)
