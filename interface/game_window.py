@@ -1,10 +1,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtMultimedia import QSoundEffect
+from pokemon import pokemonCapture, pokemonSauvage
+from joueur import joueur
 import sys
 import random
 import math
 import os
+import csv
 
 
 class Ui_MainWindow(object):
@@ -37,7 +40,7 @@ class PointWindow(QMainWindow):
         self.setWindowTitle("Combat")
         self.label = QtWidgets.QLabel(self)
         self.label.setGeometry(50, 50, 200, 200)
-        self.label.setText("You are near a point!")
+        self.label.setText("You are near a pokemon!")
         self.image_label = QtWidgets.QLabel(self)
         self.image_label.setGeometry(50, 300, 150, 150)
         self.setImage(image_file)
@@ -79,10 +82,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.current_frame = 0
         self.direction = ""
         self.is_walking = False
-        self.points = []
-        self.point_windows = []
-        self.generateRandomPoints()
+        self.pokemon_sauvages = []
+        self.pokemon_windows = []
+        self.pokemon_data = self.load_pokemon_data("./data/pokemon_first_gen.csv")
+        self.generateRandomPokemons()
         self.pokemonFought = ""
+        self.joueur = joueur()
+
+    def load_pokemon_data(self, file_path):
+        pokemon_data = []
+        with open(file_path, newline="", encoding="utf-8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                pokemon_data.append(
+                    (
+                        row["Name"],
+                        row["Type 1"],
+                        row["Type 2"] if row["Type 2"] else None,
+                        int(row["HP"]),
+                        int(row["Attack"]),
+                        int(row["Defense"]),
+                        int(row["Sp. Atk"]),
+                        int(row["Sp. Def"]),
+                        int(row["Speed"]),
+                        row["Legendary"] == "True",
+                    )
+                )
+        return pokemon_data
 
     def loadMap(self) -> None:
         self.map_pixmap = QtGui.QPixmap(self.MAP_FILE)
@@ -150,7 +176,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.window_x = max(0, min(self.window_x, self.map_width - self.window_size_x))
         self.window_y = max(0, min(self.window_y, self.map_height - self.window_size_y))
         self.updateMap()
-        self.updatePoints()
+        self.updatePokemons()
 
     def moveCharacter(self, dx: int, dy: int) -> None:
         new_x = self.character_x + dx
@@ -217,7 +243,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def walkRight(self) -> None:
         self.walk("right")
 
-    def generateRandomPoints(self) -> None:
+    def generateRandomPokemons(self) -> None:
         images_folder = "./sprites/front/"
         image_files = [
             f
@@ -233,33 +259,54 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             map_y = random.randint(62, 1420 - 20)
             window_x = map_x - self.window_x
             window_y = map_y - self.window_y
-            point_label = QtWidgets.QLabel(self.centralwidget)
-            point_pixmap = QtGui.QPixmap(os.path.join(images_folder, image_file))
-            point_label.setPixmap(point_pixmap)
-            point_label.setGeometry(window_x, window_y, 70, 70)
-            point_label.setScaledContents(True)
-            point_label.show()
-            self.points.append((map_x, map_y, point_label, image_file))
-            print(self.map_width, self.map_height)
+            pokemon_label = QtWidgets.QLabel(self.centralwidget)
+            pokemon_pixmap = QtGui.QPixmap(os.path.join(images_folder, image_file))
+            pokemon_label.setPixmap(pokemon_pixmap)
+            pokemon_label.setGeometry(window_x, window_y, 70, 70)
+            pokemon_label.setScaledContents(True)
+            pokemon_label.show()
+            # Create a pokemonSauvage instance
+            if self.pokemon_data:
+                pokemon_info = random.choice(self.pokemon_data)
+                sauvage = pokemonSauvage(
+                    nom=pokemon_info[0],
+                    type1=pokemon_info[1],
+                    type2=pokemon_info[2],
+                    hp=pokemon_info[3],
+                    atk=pokemon_info[4],
+                    defense=pokemon_info[5],
+                    atk_spe=pokemon_info[6],
+                    defense_spe=pokemon_info[7],
+                    vitesse=pokemon_info[8],
+                    legendaire=pokemon_info[9],
+                    position=(map_x, map_y),
+                    chemin_sprite=image_file,
+                    pokemon_label=pokemon_label,
+                )
+                self.pokemon_sauvages.append(sauvage)
 
     def distance(self, x1: float, y1: float, x2: float, y2: float) -> float:
         return math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
-    def updatePoints(self) -> None:
+    def updatePokemons(self) -> None:
         character_center_x = self.character_x + self.character_label.width() / 2
         character_center_y = self.character_y + self.character_label.height() / 2
 
-        for idx, (map_x, map_y, point_label, image_file) in enumerate(self.points):
-            point_label.move(map_x - self.window_x, map_y - self.window_y)
-            distance_to_point = self.distance(
+        for idx, sauvage in enumerate(self.pokemon_sauvages):
+            image_file = sauvage.chemin_sprite
+            pokemon_label = sauvage.pokemon_label
+            map_x = sauvage.position[0]
+            map_y = sauvage.position[1]
+            pokemon_label.move(map_x - self.window_x, map_y - self.window_y)
+            distance_to_pokemon = self.distance(
                 character_center_x, character_center_y, map_x, map_y
             )
 
-            if distance_to_point < 100:
-                print(f"Character is near point {idx + 1} ({image_file})")
-                if idx not in self.point_windows:
-                    self.point_windows.append(idx)
-                    point_label.hide()
+            if distance_to_pokemon < 100:
+                print(f"Character is near pokemon {idx + 1} ({image_file})")
+                if idx not in self.pokemon_windows:
+                    self.pokemon_windows.append(idx)
+                    pokemon_label.hide()
                     self.pokemonFought = image_file
                     self.openPointWindow(image_file)
 
@@ -271,9 +318,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         self.combat_music.setVolume(0.5)
         self.combat_music.play()
-        self.point_window = PointWindow(self, image_file)
+        self.pokemon_window = PointWindow(self, image_file)
         self.stopWalking()
-        self.point_window.show()
+        self.pokemon_window.show()
         print(f"You encountered a Pokémon: {self.pokemonFought}")
 
     def resumeBackgroundMusic(self) -> None:

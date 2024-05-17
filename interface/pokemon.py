@@ -48,12 +48,25 @@ class pokemonSauvage(pokemon):
         vitesse,
         legendaire,
         position,
+        chemin_sprite,
+        pokemon_label,
     ) -> None:
 
         super().__init__(
-            nom, type1, type2, hp, atk, defense, atk_spe, defense_spe, vitesse, legendaire
+            nom,
+            type1,
+            type2,
+            hp,
+            atk,
+            defense,
+            atk_spe,
+            defense_spe,
+            vitesse,
+            legendaire,
         )
         self.position = position
+        self.chemin_sprite = chemin_sprite
+        self.pokemon_label = pokemon_label
 
     def attributs(self):
 
@@ -78,7 +91,16 @@ class pokemonCapture(pokemon):
         legendaire,
     ) -> None:
         super().__init__(
-            nom, type1, type2, hp, atk, defense, atk_spe, defense_spe, vitesse, legendaire
+            nom,
+            type1,
+            type2,
+            hp,
+            atk,
+            defense,
+            atk_spe,
+            defense_spe,
+            vitesse,
+            legendaire,
         )
         self.ID = ID
 

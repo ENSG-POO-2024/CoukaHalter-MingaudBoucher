@@ -2,9 +2,8 @@ from pokemon import pokemonCapture, pokemonSauvage
 
 
 class joueur:
-    def __init__(self, position, pokemons_captures) -> None:
-        self.position = position
-        self.pokemons_captures = pokemons_captures
+    def __init__(self) -> None:
+        self.pokemons_captures = []
 
     def capture(self, pokemon_sauvage: pokemonSauvage):
         pokemon_capture = pokemonCapture(
