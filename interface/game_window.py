@@ -33,7 +33,12 @@ class Ui_MainWindow(object):
 
 
 class PointWindow(QMainWindow):
-    def __init__(self, main_window: "MainWindow", image_file: str) -> None:
+    def __init__(
+        self,
+        main_window: "MainWindow",
+        img_pokemon_sauvage: str,
+        img_pokemon_capture: str,
+    ) -> None:
         super().__init__()
         self.main_window = main_window
         self.setGeometry(100, 100, 600, 600)
@@ -43,7 +48,10 @@ class PointWindow(QMainWindow):
         self.label.setText("You are near a pokemon!")
         self.image_label = QtWidgets.QLabel(self)
         self.image_label.setGeometry(50, 300, 150, 150)
-        self.setImage(image_file)
+        self.setImage(img_pokemon_sauvage)
+        self.image_label = QtWidgets.QLabel(self)
+        self.image_label.setGeometry(100, 100, 150, 150)
+        self.setImage(img_pokemon_capture)
 
     def setImage(self, image_file: str) -> None:
         image_path = f"./sprites/back/{image_file}"
@@ -88,6 +96,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.generateRandomPokemons()
         self.pokemonFought = ""
         self.joueur = joueur()
+        self.joueur.capture(self.pokemon_sauvages[0])
+        print(self.joueur.pokemons_captures[0].chemin_sprite)
 
     def load_pokemon_data(self, file_path):
         pokemon_data = []
@@ -293,7 +303,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         character_center_y = self.character_y + self.character_label.height() / 2
 
         for idx, sauvage in enumerate(self.pokemon_sauvages):
-            image_file = sauvage.chemin_sprite
+            img_pokemon_sauvage = sauvage.chemin_sprite
             pokemon_label = sauvage.pokemon_label
             map_x = sauvage.position[0]
             map_y = sauvage.position[1]
@@ -303,14 +313,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
 
             if distance_to_pokemon < 100:
-                print(f"Character is near pokemon {idx + 1} ({image_file})")
+                print(f"Character is near pokemon {idx + 1} ({img_pokemon_sauvage})")
                 if idx not in self.pokemon_windows:
                     self.pokemon_windows.append(idx)
                     pokemon_label.hide()
-                    self.pokemonFought = image_file
-                    self.openPointWindow(image_file)
+                    self.pokemonFought = img_pokemon_sauvage
+                    self.openPointWindow(img_pokemon_sauvage)
 
-    def openPointWindow(self, image_file: str) -> None:
+    def openPointWindow(self, img_pokemon_sauvage: str) -> None:
         self.background_music.stop()
         self.combat_music = QSoundEffect()
         self.combat_music.setSource(
@@ -318,7 +328,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         self.combat_music.setVolume(0.5)
         self.combat_music.play()
-        self.pokemon_window = PointWindow(self, image_file)
+
+        img_pokemon_capture = self.joueur.pokemons_captures[0].chemin_sprite
+        self.pokemon_window = PointWindow(
+            self, img_pokemon_sauvage, img_pokemon_capture
+        )
         self.stopWalking()
         self.pokemon_window.show()
         print(f"You encountered a Pokémon: {self.pokemonFought}")

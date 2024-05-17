@@ -18,6 +18,7 @@ class joueur:
             defense_spe=pokemon_sauvage.defense_spe,
             vitesse=pokemon_sauvage.vitesse,
             legendaire=pokemon_sauvage.legendaire,
+            chemin_sprite=pokemon_sauvage.chemin_sprite,
         )
 
         return self.pokemons_captures.append(pokemon_capture)

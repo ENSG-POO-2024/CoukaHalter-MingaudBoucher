@@ -89,6 +89,7 @@ class pokemonCapture(pokemon):
         defense_spe,
         vitesse,
         legendaire,
+        chemin_sprite,
     ) -> None:
         super().__init__(
             nom,
@@ -103,6 +104,7 @@ class pokemonCapture(pokemon):
             legendaire,
         )
         self.ID = ID
+        self.chemin_sprite = chemin_sprite
 
     def attributs(self):
 
