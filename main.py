@@ -67,10 +67,12 @@ if __name__ == "__main__":
     
     pokemon1 = recap.head(1)
     pokemon2 = recap.tail(1)
-    an1 = combat.attaqueneutre(j1.pokemons_captures[0], pokemon1)
-    an2 = combat.attaqueneutre(j1.pokemons_captures[0], pokemon2)
-    #at1 = combat.attaquetype(j1.pokemons_captures[0], pokemon1)
-    #at2 = combat.attaquetype(pokemon1, j1.pokemons_captures[0])
-    #combat1 = combat.combat(j1, pokemon1)
-    #combat2 = cmbat.combat(j1, pokemon2)
+    an1 = attaqueneutre(j1.pokemons_captures[0], pokemon1)
+    an2 = attaqueneutre(j1.pokemons_captures[0], pokemon2)
+    fu = fuite(pokemon1, j1.pokemons_captures[0])
+    #at1 = attaquetype(j1.pokemons_captures[0], pokemon1)
+    #at2 = attaquetype(pokemon1, j1.pokemons_captures[0])
+    #combat1 = combat(j1, pokemon1)
+    #combat2 = combat(j1, pokemon2)
     print(j1)
+    

@@ -46,8 +46,10 @@ def attaquetype(pokemonOffensif: pokemon, pokemonDefensif: pokemon):
 def fuite(pokemon_sauvage: pokemonSauvage, pokemon_capture: pokemonCapture):
 
     proba = (
-        pokemon_capture.vitesse * 32 / np.floor((pokemon_sauvage / 4) % 255)
-    ) + 30
+        pokemon_capture.vitesse * 32 / np.floor((pokemon_sauvage.vitesse / 4) % 255)
+    ) + 30   
+    proba = proba.to_frame()
+    proba = proba.iloc[0,0]
     if proba > 255:
         return True
     else:
