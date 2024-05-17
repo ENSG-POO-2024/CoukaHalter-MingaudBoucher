@@ -7,7 +7,7 @@ Created on Mon May 13 09:36:30 2024
 
 from pokemon import pokemon, pokemonSauvage
 from joueur import joueur
-from combat import combat
+from combat import attaqueneutre, attaquetype, fuite, ChangerDePokemon, combat
 import pandas as pd
 import numpy as np
 
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     j1.affiche_pokemons_captures()
     j1.capture(pokemon_sauvage)
     j1.capture(pokemon_sauvage2)
-    j1.affiche_pokemons_captures()
+    #j1.affiche_pokemons_captures()
 
 
     stats = pd.read_csv('data/pokemon_first_gen.csv')
@@ -63,8 +63,7 @@ if __name__ == "__main__":
     
     T1 = pd.read_excel('Tableaudestypes.xlsx')
     TableDesTypes = T1.drop(T1.columns[0], axis=1)
-    TableDesTypesNumpy = TableDesTypes.values
-    
+    TableDesTypesNumpy = TableDesTypes.values   
     
     pokemon1 = recap.head(1)
     pokemon2 = recap.tail(1)
@@ -72,6 +71,6 @@ if __name__ == "__main__":
     an2 = combat.attaqueneutre(j1.pokemons_captures[0], pokemon2)
     #at1 = combat.attaquetype(j1.pokemons_captures[0], pokemon1)
     #at2 = combat.attaquetype(pokemon1, j1.pokemons_captures[0])
-    combat1 = combat.combat(j1, pokemon1)
-    #combat2 = combat.combat(j1, pokemon2)
+    #combat1 = combat.combat(j1, pokemon1)
+    #combat2 = cmbat.combat(j1, pokemon2)
     print(j1)

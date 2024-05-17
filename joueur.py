@@ -11,6 +11,7 @@ class joueur:
             ID=1 + len(self.pokemons_captures),
             nom=pokemon_sauvage.nom,
             type1=pokemon_sauvage.type1,
+            type2=pokemon_sauvage.type2,
             hp=pokemon_sauvage.hp,
             atk=pokemon_sauvage.atk,
             defense=pokemon_sauvage.defense,

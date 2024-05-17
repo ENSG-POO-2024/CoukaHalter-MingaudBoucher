@@ -18,6 +18,7 @@ class pokemon(metaclass=ABCMeta):
 
         self.nom = nom
         self.type1 = type1
+        self.type2 = type2
         self.hp = hp
         self.atk = atk
         self.defense = defense
