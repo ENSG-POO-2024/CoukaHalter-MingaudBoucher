@@ -3,6 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtMultimedia import QSoundEffect
+from PyQt5 import QtWidgets, uic
 from pokemon import pokemonCapture, pokemonSauvage
 from joueur import joueur
 import sys
@@ -367,6 +368,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.combat_music.stop()
         super().closeEvent(event)
 
+
+class MainWindow(QtWidgets.QMainWindow):
+    def _init_(self):
+        super(MainWindow, self)._init_()
+        uic.loadUi('boutons.ui', self)
+
+        self.additional_widget = QtWidgets.QWidget()
+        uic.loadUi('boutons.ui', self.additional_widget)
+
+        self.layout = QtWidgets.QVBoxLayout(self.centralWidget())
+        self.layout.addWidget(self.additional_widget)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
