@@ -10,6 +10,11 @@ import numpy as np
 import pandas as pd
 import random as rd
 
+def entier(x):
+    x = x.to_frame()
+    x = x.iloc[0,0]
+    return x
+
 
 def attaqueneutre(pokemonOffensif: pokemon, pokemonDefensif: pokemon):
     
@@ -17,7 +22,8 @@ def attaqueneutre(pokemonOffensif: pokemon, pokemonDefensif: pokemon):
         degat = np.floor(22 * pokemonOffensif.atk / pokemonDefensif.defense)
     else:
         degat = np.floor(22 * pokemonOffensif.atk_spe / pokemonDefensif.defense_spe)
-    return degat.to_frame()
+    return entier(degat)
+
 
 def attaquetype(pokemonOffensif: pokemon, pokemonDefensif: pokemon):
 
@@ -41,15 +47,14 @@ def attaquetype(pokemonOffensif: pokemon, pokemonDefensif: pokemon):
             np.floor(22 * pokemonOffensif.atk_spe / pokemonDefensif.defense_spe)
             * multiplicateur
         )
-    return degat.to_frame()
+    return entier(degat)
 
 def fuite(pokemon_sauvage: pokemonSauvage, pokemon_capture: pokemonCapture):
 
     proba = (
         pokemon_capture.vitesse * 32 / np.floor((pokemon_sauvage.vitesse / 4) % 255)
     ) + 30   
-    proba = proba.to_frame()
-    proba = proba.iloc[0,0]
+    proba = entier(proba)
     if proba > 255:
         return True
     else:
@@ -84,7 +89,6 @@ def combat(joueur: joueur, pokemon_sauvage: pokemonSauvage):
         return "de retour au bercail"
         # backtomap
         # win(le poke disparait de la map)
-        type(joueur.pokemons_captures)
     elif len(joueur.pokemons_captures) == 0:
         return "gros nul"
         # backtomap
